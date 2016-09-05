@@ -11,9 +11,10 @@ loop:
 	li	$v0,11		# syscall with v0 = 11 will print out
 	syscall			# one byte from a0 to the Run I/O window
 
-	addi	$s0,$s0,1	# what happens if the constant is changed?
-	
-	li	$t0,0x5b
+	addi	$s0,$s0,3	# what happens if the constant is changed?
+				# we will be moved forward that amount
+				
+	li	$t0,0x5d	# load the character that the loop needs to be compared to, this case 3 steps away from Z
 	bne	$s0,$t0,loop
 	nop			# delay slot filler (just in case)
 
