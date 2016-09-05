@@ -13,7 +13,7 @@ loop:
 
 	addi	$s0,$s0,3	# what happens if the constant is changed?
 				# we will be moved forward that amount
-				
+	#li	$t0,0x5b			
 	li	$t0,0x5d	# load the character that the loop needs to be compared to, this case 3 steps away from Z
 	bne	$s0,$t0,loop
 	nop			# delay slot filler (just in case)
