@@ -74,3 +74,43 @@ tiend:	sw	$t0,0($a0)	# save updated result
 
   # you can write your code for subroutine "hexasc" below this line
   #
+ hexasc:
+	#one register in $a0 with the 4 lsb
+	#will return in $v0 the 7 LSB, all other bits must be 0.
+	andi	$t0, $a0, 0xF 		#maska fram 4 lsb
+	
+	ble	$t0, 0x09, numbers 	#iom bokstäver och siffror är på olika delar av ASCII-tabellen
+				   	#så gör vi en till subrutin att gå till för att lösa det
+	
+	addi	$t0, $t0, 0x37		#lägg till 0x37 (alltså 55 dec) för att komma till de
+					#bokstäverna i ascii-tabellen
+	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
+	move	$v0, $t0		#flytta värdet i t0 till v0
+	jr	$ra			#återgå till main
+numbers:
+	addi	$t0, $t0, 0x30		#lägg till 0x30 (48 dec) för att komma till de numeriska
+					#värdena i ascii-tabellen
+	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
+	move	$v0, $t0		#flytta värdet i t0 till v0
+	jr	$ra			#återgå till main
+	
+delay:
+	jr	$ra
+	nop 
+
+time2string:
+	#2 paramters, $a0, $a1
+	#hela $a är relevant ty det är en minnesadress
+	#$a1:s 16 lsb är mest relevanta för oss, alltså 4 LSB
+	#returnera ingenting
+	#sekvensen ska skriva dit $a0 pekar
+	#på den adressen skall vi skriva:
+	#1. 2 siffror
+	#2. Kolon
+	#3. 2 siffror
+	#4. Nullbyte
+	andi	$t1, $a1, 0xFFFF #ta fram 4 LSB från a1
+	j	hexasc
+	
+	
+	
