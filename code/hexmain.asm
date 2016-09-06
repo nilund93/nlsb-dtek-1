@@ -4,7 +4,7 @@
 
 	.text
 main:
-	li	$a0,0		# change this to test different values
+	li	$a0,17		# change this to test different values
 
 	jal	hexasc		# call hexasc
 	nop			# delay slot filler (just in case)	
@@ -19,4 +19,26 @@ stop:	j	stop		# stop after one run
 
   # You can write your own code for hexasc here
   #
-
+hexasc:
+	#one register in $a0 with the 4 lsb
+	#will return in $v0 the 7 LSB, all other bits must be 0.
+	andi	$t0, $a0, 0xF 		#maska fram 4 lsb
+	
+	ble	$t0, 0x09, numbers 	#iom bokstäver och siffror är på olika delar av ASCII-tabellen
+				   	#så gör vi en till subrutin att gå till för att lösa det
+	
+	addi	$t0, $t0, 0x37		#lägg till 0x37 (alltså 55 dec) för att komma till de
+					#bokstäverna i ascii-tabellen
+	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
+	move	$v0, $t0		#flytta värdet i t0 till v0
+	jr	$ra			#återgå till main
+numbers:
+	addi	$t0, $t0, 0x30		#lägg till 0x30 (48 dec) för att komma till de numeriska
+					#värdena i ascii-tabellen
+	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
+	move	$v0, $t0		#flytta värdet i t0 till v0
+	jr	$ra			#återgå till main
+	
+	
+	
+	
