@@ -109,8 +109,14 @@ time2string:
 	#2. Kolon
 	#3. 2 siffror
 	#4. Nullbyte
-	andi	$t1, $a1, 0xFFFF #ta fram 4 LSB från a1
-	j	hexasc
+	#hex, storebyte, shiftright, hex, storebyte, kolon(storebyte), shiftright, hex, storebyte, hex, storebyte, shiftright, SKRIV UT SKITEN
 	
+	#GÖR EN LOOP SOM LOOPAR FYRA GGR
+	#Efter den andra gången storebytea ett kolon 
+	
+	andi	$t1, $a1, 0xFFFF #ta fram 4 LSB från a1
+	add 	$, $, 
+	
+	beq	$, $, 	
 	
 	
