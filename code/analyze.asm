@@ -1,7 +1,7 @@
   # analyze.asm
   # This file written 2015 by F Lundevall
   # Copyright abandoned - this file is in the public domain.
-
+#HEJHEJHEJNICLAS
 	.text
 main:
 	li	$s0,0x30
