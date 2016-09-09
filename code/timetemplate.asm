@@ -114,9 +114,9 @@ time2string:
 	#GÖR EN LOOP SOM LOOPAR FYRA GGR
 	#Efter den andra gången storebytea ett kolon 
 	
-	andi	$t1, $a1, 0xFFFF #ta fram 4 LSB från a1
-	add 	$, $, 
-	
-	beq	$, $, 	
+	andi	$t0, $a1, 0xFFFF #ta fram 4 LSB från a1
+	j	hexasc
+	sb	$a0, ox7f($v0)
+	srl	
 	
 	
