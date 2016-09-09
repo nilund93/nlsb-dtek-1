@@ -113,10 +113,25 @@ time2string:
 	
 	#GÖR EN LOOP SOM LOOPAR FYRA GGR
 	#Efter den andra gången storebytea ett kolon 
+	la	$t2($a0)	#ladda adressen från a0.
 	
-	andi	$t0, $a1, 0xFFFF #ta fram 4 LSB från a1
+	andi	$a1, $a1, 0xFFFF #ta fram 4 LSB från a1
 	j	hexasc
-	sb	$a0, ox7f($v0)
-	srl	
+	sb	$t0, 0x7F($v0)
+	srl	$a1, $a1, 4	#shifta höger 4 bitar
+	
+	j	hexasc
+	sb	$t0, 0x7F($v0)
+	srl	$a1, $a1, 4	#shifta höger 4 bitar
+	
+	sb	$t0, 0x3A($v0)	#lagra värdet för : - GÖR DEN DET?
+	
+	j	hexasc
+	sb	$t0, 0x7F($v0)
+	srl	$a1, $a1, 4	#shifta höger 4 bitar
+	
+	j	hexasc
+	sb	$t0, 0x7F($v0)
+	srl	$a1, $a1, 4	#shifta höger 4 bitar
 	
 	
