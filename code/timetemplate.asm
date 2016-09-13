@@ -77,6 +77,9 @@ tiend:	sw	$t0,0($a0)	# save updated result
  hexasc:
 	#one register in $a0 with the 4 lsb
 	#will return in $v0 the 7 LSB, all other bits must be 0.
+	PUSH	$s0
+	PUSH	$s1
+	PUSH	$ra
 	andi	$t0, $a0, 0xF 		#maska fram 4 lsb
 	
 	ble	$t0, 0x09, numbers 	#iom bokstäver och siffror är på olika delar av ASCII-tabellen
@@ -86,12 +89,19 @@ tiend:	sw	$t0,0($a0)	# save updated result
 					#bokstäverna i ascii-tabellen
 	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
 	move	$v0, $t0		#flytta värdet i t0 till v0
+	POP	$s0
+	POP	$s1
+	POP	$ra
 	jr	$ra			#återgå till main
 numbers:
 	addi	$t0, $t0, 0x30		#lägg till 0x30 (48 dec) för att komma till de numeriska
 					#värdena i ascii-tabellen
 	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
 	move	$v0, $t0		#flytta värdet i t0 till v0
+	POP	$ra
+	POP	$s1
+	POP	$s0
+
 	jr	$ra			#återgå till main
 	
 delay:
@@ -99,39 +109,37 @@ delay:
 	nop 
 
 time2string:
-	#2 paramters, $a0, $a1
-	#hela $a är relevant ty det är en minnesadress
-	#$a1:s 16 lsb är mest relevanta för oss, alltså 4 LSB
-	#returnera ingenting
-	#sekvensen ska skriva dit $a0 pekar
-	#på den adressen skall vi skriva:
-	#1. 2 siffror
-	#2. Kolon
-	#3. 2 siffror
-	#4. Nullbyte
-	#hex, storebyte, shiftright, hex, storebyte, kolon(storebyte), shiftright, hex, storebyte, hex, storebyte, shiftright, SKRIV UT SKITEN
+	#sb data, imm(destination)
+	PUSH	$ra
+	move	$s0, $a0	#spara minnesadressen från a0 i s0
+	move	$s1, $a1	#spara timestampen från a1 i s1
 	
-	#GÖR EN LOOP SOM LOOPAR FYRA GGR
-	#Efter den andra gången storebytea ett kolon 
-	la	$t2($a0)	#ladda adressen från a0.
+	srl	$a0, $a1, 12	#shifta höger 12 bitar för att få minut tiotal
+	jal	hexasc		
+	sb	$v0, 0($s0)	#lagrar hexasc returnvärde i s0.
 	
-	andi	$a1, $a1, 0xFFFF #ta fram 4 LSB från a1
-	j	hexasc
-	sb	$t0, 0x7F($v0)
-	srl	$a1, $a1, 4	#shifta höger 4 bitar
+	addi	$s0, $s0, 1	#lägg till 1 i adressen
+	srl	$a0, $s1, 8	#shifta höger 8 bitar för att få minut ental
+	jal	hexasc		
+	sb	$v0, 0($s0)	
 	
-	j	hexasc
-	sb	$t0, 0x7F($v0)
-	srl	$a1, $a1, 4	#shifta höger 4 bitar
+	addi	$s0, $s0, 1
+	addi	$t1, $zero, 0x3A	
+	sb	$t1, 0($s0)	#lagra värdet för :
+	addi	$s0, $s0, 1
+
+	srl	$a0, $s1, 4	#shifta höger 4 bitar för att få sekund tiotal 
+	jal	hexasc
+	sb	$v0, 0($s0)
+	addi	$s0, $s0, 1
 	
-	sb	$t0, 0x3A($v0)	#lagra värdet för : - GÖR DEN DET?
+	srl	$a0, $s1, 0	#tar fram sekund ental
+	jal	hexasc
+	sb	$v0, 0($s0)
+	addi	$s0, $s0, 1
 	
-	j	hexasc
-	sb	$t0, 0x7F($v0)
-	srl	$a1, $a1, 4	#shifta höger 4 bitar
-	
-	j	hexasc
-	sb	$t0, 0x7F($v0)
-	srl	$a1, $a1, 4	#shifta höger 4 bitar
-	
+	addi	$t1, $zero, 0x00 #lagra nullbyte
+	sb	$t1, 0($s0)
+	POP	$ra
+	jr	$ra
 	
