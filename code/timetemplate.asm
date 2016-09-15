@@ -83,7 +83,7 @@ tiend:	sw	$t0,0($a0)	# save updated result
 	andi	$t0, $a0, 0xF 		#maska fram 4 lsb
 	
 	ble	$t0, 0x09, numbers 	#iom bokstäver och siffror är på olika delar av ASCII-tabellen
-				   	#så gör vi en till subrutin att gå till för att lösa det
+	nop			   	#så gör vi en till subrutin att gå till för att lösa det
 	
 	addi	$t0, $t0, 0x37		#lägg till 0x37 (alltså 55 dec) för att komma till de
 					#bokstäverna i ascii-tabellen
@@ -93,6 +93,7 @@ tiend:	sw	$t0,0($a0)	# save updated result
 	POP	$s1
 	POP	$ra
 	jr	$ra			#återgå till main
+	nop
 numbers:
 	addi	$t0, $t0, 0x30		#lägg till 0x30 (48 dec) för att komma till de numeriska
 					#värdena i ascii-tabellen
@@ -103,6 +104,7 @@ numbers:
 	POP	$s0
 
 	jr	$ra			#återgå till main
+	nop
 	
 delay:
 	li	$t0, 1000	#sätt $t0 = ms = 1000
@@ -110,11 +112,14 @@ while:
 	li	$t1, 0
 for:
 	beq	$t1, 1, forend	#Konstant som skall ändras.
+	nop
 	addi	$t1, $t1, 1
 	j	for
+	nop
 forend:
 	addi	$t0, $t0, -1
 	bgtz	$t0, while	#om $t0 > 0, skicka tillbaka till while.
+	nop
 done:
 	jr	$ra
 	nop 
@@ -126,12 +131,14 @@ time2string:
 	move	$s1, $a1	#spara timestampen från a1 i s1
 	
 	srl	$a0, $a1, 12	#shifta höger 12 bitar för att få minut tiotal
-	jal	hexasc		
+	jal	hexasc
+	nop		
 	sb	$v0, 0($s0)	#lagrar hexasc returnvärde i s0.
 	
 	addi	$s0, $s0, 1	#lägg till 1 i adressen
 	srl	$a0, $s1, 8	#shifta höger 8 bitar för att få minut ental
-	jal	hexasc		
+	jal	hexasc
+	nop		
 	sb	$v0, 0($s0)	
 	
 	addi	$s0, $s0, 1
@@ -141,11 +148,13 @@ time2string:
 
 	srl	$a0, $s1, 4	#shifta höger 4 bitar för att få sekund tiotal 
 	jal	hexasc
+	nop
 	sb	$v0, 0($s0)
 	addi	$s0, $s0, 1
 	
 	srl	$a0, $s1, 0	#tar fram sekund ental
 	jal	hexasc
+	nop
 	sb	$v0, 0($s0)
 	addi	$s0, $s0, 1
 	
@@ -153,4 +162,5 @@ time2string:
 	sb	$t1, 0($s0)
 	POP	$ra
 	jr	$ra
+	nop
 	
