@@ -105,6 +105,17 @@ numbers:
 	jr	$ra			#återgå till main
 	
 delay:
+	li	$t0, 1000	#sätt $t0 = ms = 1000
+while:	
+	li	$t1, 0
+for:
+	beq	$t1, 1, forend	#Konstant som skall ändras.
+	addi	$t1, $t1, 1
+	j	for
+forend:
+	addi	$t0, $t0, -1
+	bgtz	$t0, while	#om $t0 > 0, skicka tillbaka till while.
+done:
 	jr	$ra
 	nop 
 
