@@ -74,7 +74,7 @@ tiend:	sw	$t0,0($a0)	# save updated result
 
   # you can write your code for subroutine "hexasc" below this line
   #
- hexasc:
+hexasc:
 	#one register in $a0 with the 4 lsb
 	#will return in $v0 the 7 LSB, all other bits must be 0.
 	PUSH	$s0
@@ -107,18 +107,20 @@ numbers:
 	nop
 	
 delay:
-	li	$t0, 1000	#sätt $t0 = ms = 1000
+	li	$t0, -1	#sätt $t0 = ms = 1000
+	blez 	$t0, done	#kolla om ms är 0
+	nop
 while:	
 	li	$t1, 0
 for:
 	beq	$t1, 1, forend	#Konstant som skall ändras.
 	nop
-	addi	$t1, $t1, 1
+	addi	$t1, $t1, 1	#i++
 	j	for
 	nop
 forend:
 	addi	$t0, $t0, -1
-	bgtz	$t0, while	#om $t0 > 0, skicka tillbaka till while.
+	bgtz	$t0, while	#om ms > 0, skicka tillbaka till while.
 	nop
 done:
 	jr	$ra
