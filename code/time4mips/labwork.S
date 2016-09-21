@@ -2,7 +2,7 @@
   # Written 2015 by F Lundevall
   # Skeleton file for IS1200/IS1500 lab 1 2015-2016.
   # The macros PUSH and POP are in the public domain.
-
+  # edited by Niclas Lund & Sofie Borck Janeheim
 .macro	PUSH reg
 	addi	$sp,$sp,-4
 	sw	\reg,0($sp)
@@ -14,61 +14,109 @@
 .endm
   # You can add your own code here
   #
-delay:
-	li	$t0, 1000	#sätt $t0 = ms = 1000
-while:	
-	li	$t1, 0
-for:
-	beq	$t1, 1, forend	#Konstant som skall ändras.
+.global hexasc, delay, time2string  
+.text
+hexasc:
+	#one register in $a0 with the 4 lsb
+	#will return in $v0 the 7 LSB, all other bits must be 0.
+	PUSH	$s0
+	PUSH	$s1
+	PUSH	$ra
+	andi	$t0, $a0, 0xF 		#maska fram 4 lsb
+	
+	ble	$t0, 0x09, numbers 	#iom bokstï¿½ver och siffror ï¿½r pï¿½ olika delar av ASCII-tabellen
+	nop			   	#sï¿½ gï¿½r vi en till subrutin att gï¿½ till fï¿½r att lï¿½sa det
+	
+	addi	$t0, $t0, 0x37		#lï¿½gg till 0x37 (alltsï¿½ 55 dec) fï¿½r att komma till de
+					#bokstï¿½verna i ascii-tabellen
+	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
+	move	$v0, $t0		#flytta vï¿½rdet i t0 till v0
+	POP	$ra
+	POP	$s1
+	POP	$s0
+	jr	$ra			#ï¿½tergï¿½ till main
 	nop
-	addi	$t1, $t1, 1
+numbers:
+
+	addi	$t0, $t0, 0x30		#lï¿½gg till 0x30 (48 dec) fï¿½r att komma till de numeriska
+					#vï¿½rdena i ascii-tabellen
+	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
+	move	$v0, $t0		#flytta vï¿½rdet i t0 till v0
+	POP	$ra
+	POP	$s1
+	POP	$s0
+
+	jr	$ra			#ï¿½tergï¿½ till main
+	nop
+	
+delay:				#Uppgift 4
+	li	$a0, 3000	#sï¿½tt $t0 = ms = 1000
+	bltz 	$a0, done	#kolla om ms ï¿½r >0
+	nop
+while:	
+	li	$t1, 0		#int i;
+for:
+	bgt	$t1, 3800, forend	#Konstant som skall ï¿½ndras.
+	nop
+	addi	$t1, $t1, 1	#i++
 	j	for
 	nop
 forend:
-	addi	$t0, $t0, -1
-	bgtz	$t0, while	#om $t0 > 0, skicka tillbaka till while.
+	addi	$a0, $a0, -1
+	bgtz	$a0, while	#om ms > 0, skicka tillbaka till while.
 	nop
 done:
 	jr	$ra
 	nop 
 
-time2string:
+
+time2string:			#Uppgift 3
 	#sb data, imm(destination)
 	PUSH	$ra
-	move	$s0, $a0	#spara minnesadressen från a0 i s0
-	move	$s1, $a1	#spara timestampen från a1 i s1
+	move	$s0, $a0	#spara minnesadressen frï¿½n a0 i s0
+	move	$s1, $a1	#spara timestampen frï¿½n a1 i s1
 	
-	srl	$a0, $a1, 12	#shifta höger 12 bitar för att få minut tiotal
+	srl	$a0, $a1, 12	#shifta hï¿½ger 12 bitar fï¿½r att fï¿½ minut tiotal
 	jal	hexasc
 	nop		
-	sb	$v0, 0($s0)	#lagrar hexasc returnvärde i s0.
+	sb	$v0, 0($s0)	#lagrar hexasc returnvï¿½rde i s0.
 	
-	addi	$s0, $s0, 1	#lägg till 1 i adressen
-	srl	$a0, $s1, 8	#shifta höger 8 bitar för att få minut ental
+	srl	$a0, $s1, 8	#shifta hï¿½ger 8 bitar fï¿½r att fï¿½ minut ental
 	jal	hexasc
 	nop		
-	sb	$v0, 0($s0)	
+	sb	$v0, 1($s0)	
 	
-	addi	$s0, $s0, 1
 	addi	$t1, $zero, 0x3A	
-	sb	$t1, 0($s0)	#lagra värdet för :
-	addi	$s0, $s0, 1
+	sb	$t1, 2($s0)	#lagra vï¿½rdet fï¿½r :
 
-	srl	$a0, $s1, 4	#shifta höger 4 bitar för att få sekund tiotal 
+	srl	$a0, $s1, 4	#shifta hï¿½ger 4 bitar fï¿½r att fï¿½ sekund tiotal 
 	jal	hexasc
 	nop
-	sb	$v0, 0($s0)
-	addi	$s0, $s0, 1
+	sb	$v0, 3($s0)
 	
-	srl	$a0, $s1, 0	#tar fram sekund ental
+	move	$a0, $s1	#tar fram sekund ental
 	jal	hexasc
 	nop
-	sb	$v0, 0($s0)
-	addi	$s0, $s0, 1
+	#brancha om v0 Ã¤r samma vÃ¤rde som ascii fÃ¶r 9
+	bne	$v0, 0x39, NICHTNEIN
+	nop
+	li	$t1, 0x4E
+	sb	$t1, 4($s0)
+	li	$t1, 0x45
+	sb	$t1, 5($s0)
+	li	$t1, 0x49
+	sb	$t1, 6($s0)
+	li	$t1, 0x4E
+	sb	$t1, 7($s0)
 	
-	addi	$t1, $zero, 0x00 #lagra nullbyte
-	sb	$t1, 0($s0)
+	sb	$zero, 8($s0)
+	j	GoOn
+	nop
+NICHTNEIN:	
+	sb	$v0, 4($s0)
+	#addi	$t1, $zero, 0x00 #lagra nullbyte
+	sb	$zero, 5($s0)
+GoOn:		
 	POP	$ra
 	jr	$ra
 	nop
-	

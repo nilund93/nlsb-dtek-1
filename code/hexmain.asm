@@ -1,10 +1,11 @@
+  #Uppgift 2
   # hexmain.asm
   # Written 2015-09-04 by F Lundevall
   # Copyright abandonded - this file is in the public domain.
-
+  # edited by Niclas Lund & Sofie Borck Janeheim
 	.text
 main:
-	li	$a0,0		# change this to test different values
+	li	$a0,5		# change this to test different values
 
 	jal	hexasc		# call hexasc
 	nop			# delay slot filler (just in case)	
@@ -19,26 +20,27 @@ stop:	j	stop		# stop after one run
 
   # You can write your own code for hexasc here
   #
-hexasc:
+hexasc:	#frÃ¥n uppgift 2
 	#one register in $a0 with the 4 lsb
 	#will return in $v0 the 7 LSB, all other bits must be 0.
 	andi	$t0, $a0, 0xF 		#maska fram 4 lsb
 	
-	ble	$t0, 0x09, numbers 	#iom bokstäver och siffror är på olika delar av ASCII-tabellen
-				   	#så gör vi en till subrutin att gå till för att lösa det
+	ble	$t0, 0x09, numbers 	#iom bokstï¿½ver och siffror ï¿½r pï¿½ olika delar av ASCII-tabellen
+	nop			   	#sï¿½ gï¿½r vi en till subrutin att gï¿½ till fï¿½r att lï¿½sa det
 	
-	addi	$t0, $t0, 0x37		#lägg till 0x37 (alltså 55 dec) för att komma till de
-					#bokstäverna i ascii-tabellen
+	addi	$t0, $t0, 0x37		#lï¿½gg till 0x37 (alltsï¿½ 55 dec) fï¿½r att komma till de
+					#bokstï¿½verna i ascii-tabellen
 	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
-	move	$v0, $t0		#flytta värdet i t0 till v0
-	jr	$ra			#återgå till main
+	move	$v0, $t0		#flytta vï¿½rdet i t0 till v0
+
+	jr	$ra			#ï¿½tergï¿½ till main
+	nop
 numbers:
-	addi	$t0, $t0, 0x30		#lägg till 0x30 (48 dec) för att komma till de numeriska
-					#värdena i ascii-tabellen
+	addi	$t0, $t0, 0x30		#lï¿½gg till 0x30 (48 dec) fï¿½r att komma till de numeriska
+					#vï¿½rdena i ascii-tabellen
 	andi	$t0, $t0, 0x7f		#maska fram 7 lsb
-	move	$v0, $t0		#flytta värdet i t0 till v0
-	jr	$ra			#återgå till main
-	
-	
-	
+	move	$v0, $t0		#flytta vï¿½rdet i t0 till v0
+
+	jr	$ra			#ï¿½tergï¿½ till main
+	nop
 	

@@ -1,10 +1,11 @@
+  #Uppgift 1
   # analyze.asm
   # This file written 2015 by F Lundevall
   # Copyright abandoned - this file is in the public domain.
-#HEJHEJHEJNICLAS
+  # edited by Niclas Lund & Sofie Borck Janeheim
 	.text
 main:
-	li	$s0,0x30
+	li	$s0,0x30	
 loop:
 	move	$a0,$s0		# copy from s0 to a0
 	
@@ -12,10 +13,10 @@ loop:
 	syscall			# one byte from a0 to the Run I/O window
 
 	addi	$s0,$s0,3	# what happens if the constant is changed?
-				# vi går imm steg framåt i ascii-tabellen
+				# vi gï¿½r imm steg framï¿½t i ascii-tabellen
 	
-	li	$t0,0x5d	# detta är värdet i ascii-tabellen som bne-instruktionen kommer
-				# att jämföra med, är värdet fel kommer programmet printa i oändlighet
+	li	$t0,0x5d	# detta ï¿½r vï¿½rdet i ascii-tabellen som bne-instruktionen kommer
+				# att jï¿½mfï¿½ra med, ï¿½r vï¿½rdet fel kommer programmet printa i oï¿½ndlighet
 	bne	$s0,$t0,loop
 	nop			# delay slot filler (just in case)
 
